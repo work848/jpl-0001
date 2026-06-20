@@ -8,5 +8,15 @@
     "createdAt": 1781957919393,
     "pronunciation": "たべる",
     "meaning": "吃"
+  },
+  {
+    "id": "b9104b18-1c4c-4c8c-8fda-7f70d2c1ae14",
+    "word": "高い",
+    "type": "godan",
+    "typeLabel": "一类动词",
+    "pronunciation": "たかい",
+    "meaning": "高的",
+    "hidden": false,
+    "createdAt": 1781962970571
   }
 ]

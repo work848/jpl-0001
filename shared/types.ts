@@ -143,11 +143,20 @@ export const WORD_CATEGORY_LABELS: Record<WordCategory, string> = {
 export const TYPE_LABEL_TO_VERB_TYPE: Record<string, VerbType> = {
   '一类动词': 'godan',
   '五段动词': 'godan',
+  '一类': 'godan',
+  '五段': 'godan',
+  '1': 'godan',
   '二类动词': 'ichidan',
   '一段动词': 'ichidan',
+  '二类': 'ichidan',
+  '一段': 'ichidan',
+  '2': 'ichidan',
   '三类动词': 'irregular',
   '不规则动词': 'irregular',
   'サ变カ变动词': 'irregular',
+  '三类': 'irregular',
+  '不规则': 'irregular',
+  '3': 'irregular',
 };
 
 export const TYPE_LABEL_TO_ADJECTIVE_TYPE: Record<string, AdjectiveType> = {
@@ -155,8 +164,14 @@ export const TYPE_LABEL_TO_ADJECTIVE_TYPE: Record<string, AdjectiveType> = {
   '一类形容词': 'i',
   'い形容词': 'i',
   'イ形容词': 'i',
+  '1类': 'i',
+  '一类': 'i',
+  '1': 'i',
   '2类形容词': 'na',
   '二类形容词': 'na',
   'な形容词': 'na',
   'ナ形容词': 'na',
+  '2类': 'na',
+  '二类': 'na',
+  '2': 'na',
 };

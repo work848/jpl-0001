@@ -168,33 +168,115 @@ export default function PracticePage() {
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="grid grid-cols-4 gap-4 mb-8">
-            <div className="text-center p-4 bg-slate-50 rounded-xl">
+            <button
+              onClick={() =>
+                setPracticeType(practiceType === 'verb' ? 'all' : 'verb')
+              }
+              className={`text-center p-4 rounded-xl cursor-pointer transition-all ${
+                practiceType === 'verb'
+                  ? 'bg-blue-100 ring-2 ring-blue-400'
+                  : 'bg-slate-50 hover:bg-slate-100'
+              }`}
+            >
               <div className="flex items-center justify-center gap-2 mb-2">
-                <PenTool className="text-slate-600" size={18} />
-                <span className="text-sm text-slate-500">动词</span>
+                <PenTool
+                  className={
+                    practiceType === 'verb' ? 'text-blue-600' : 'text-slate-600'
+                  }
+                  size={18}
+                />
+                <span
+                  className={`text-sm ${
+                    practiceType === 'verb'
+                      ? 'text-blue-600 font-medium'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  动词
+                </span>
               </div>
-              <span className="text-2xl font-bold text-slate-700">
+              <span
+                className={`text-2xl font-bold ${
+                  practiceType === 'verb' ? 'text-blue-600' : 'text-slate-700'
+                }`}
+              >
                 {visibleVerbs.length}
               </span>
-            </div>
-            <div className="text-center p-4 bg-slate-50 rounded-xl">
+            </button>
+            <button
+              onClick={() =>
+                setPracticeType(practiceType === 'adjective' ? 'all' : 'adjective')
+              }
+              className={`text-center p-4 rounded-xl cursor-pointer transition-all ${
+                practiceType === 'adjective'
+                  ? 'bg-purple-100 ring-2 ring-purple-400'
+                  : 'bg-slate-50 hover:bg-slate-100'
+              }`}
+            >
               <div className="flex items-center justify-center gap-2 mb-2">
-                <BookOpen className="text-slate-600" size={18} />
-                <span className="text-sm text-slate-500">形容词</span>
+                <BookOpen
+                  className={
+                    practiceType === 'adjective'
+                      ? 'text-purple-600'
+                      : 'text-slate-600'
+                  }
+                  size={18}
+                />
+                <span
+                  className={`text-sm ${
+                    practiceType === 'adjective'
+                      ? 'text-purple-600 font-medium'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  形容词
+                </span>
               </div>
-              <span className="text-2xl font-bold text-slate-700">
+              <span
+                className={`text-2xl font-bold ${
+                  practiceType === 'adjective'
+                    ? 'text-purple-600'
+                    : 'text-slate-700'
+                }`}
+              >
                 {visibleAdjectives.length}
               </span>
-            </div>
-            <div className="text-center p-4 bg-slate-50 rounded-xl">
+            </button>
+            <button
+              onClick={() =>
+                setPracticeType(practiceType === 'noun' ? 'all' : 'noun')
+              }
+              className={`text-center p-4 rounded-xl cursor-pointer transition-all ${
+                practiceType === 'noun'
+                  ? 'bg-teal-100 ring-2 ring-teal-400'
+                  : 'bg-slate-50 hover:bg-slate-100'
+              }`}
+            >
               <div className="flex items-center justify-center gap-2 mb-2">
-                <FileText className="text-slate-600" size={18} />
-                <span className="text-sm text-slate-500">名词</span>
+                <FileText
+                  className={
+                    practiceType === 'noun' ? 'text-teal-600' : 'text-slate-600'
+                  }
+                  size={18}
+                />
+                <span
+                  className={`text-sm ${
+                    practiceType === 'noun'
+                      ? 'text-teal-600 font-medium'
+                      : 'text-slate-500'
+                  }`}
+                >
+                  名词
+                </span>
               </div>
-              <span className="text-2xl font-bold text-slate-700">
+              <span
+                className={`text-2xl font-bold ${
+                  practiceType === 'noun' ? 'text-teal-600' : 'text-slate-700'
+                }`}
+              >
                 {visibleNouns.length}
               </span>
-            </div>
+            </button>
             <div className="text-center p-4 bg-rose-50 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <Settings className="text-rose-500" size={18} />

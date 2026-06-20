@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Upload, Check, AlertCircle, Info, X, FileText } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Upload, Check, AlertCircle, Info, X, FileText, FileUp } from 'lucide-react';
 import { useAppStore } from '../store';
 import ErrorMessage from '../components/ErrorMessage';
 import {
@@ -9,11 +9,11 @@ import {
 } from '../../shared/types';
 
 const SAMPLE_TEXT = `たべる
-食べる 二类动词
+食べる 2
 吃
 
 たかい
-高い 1类形容词
+高い 1
 高的
 
 ねこ
@@ -46,6 +46,7 @@ export default function ImportPage() {
   } = useAppStore();
 
   const [text, setText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImport = async () => {
     if (!text.trim()) return;
@@ -60,6 +61,30 @@ export default function ImportPage() {
   const handleClear = () => {
     setText('');
     clearImportResult();
+  };
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setText(content);
+      clearImportResult();
+    };
+    reader.onerror = () => {
+      useAppStore.setState({ error: '读取文件失败' });
+    };
+    reader.readAsText(file);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
 
   return (
@@ -95,19 +120,35 @@ export default function ImportPage() {
               <p className="text-slate-500">中文释义</p>
             </div>
             <p className="mt-2 text-xs text-slate-500">
-              动词类型：一类动词、二类动词、三类动词 | 形容词类型：1类形容词、2类形容词
+              动词类型：1(一类) / 2(二类) / 3(三类) | 形容词类型：1(1类) / 2(2类) | 名词：无需标注
             </p>
           </div>
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-slate-700 mb-2">
-            导入内容
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-slate-700">
+              导入内容
+            </label>
+            <button
+              onClick={handleFileSelect}
+              className="text-sm text-rose-500 hover:text-rose-600 flex items-center gap-1 transition-colors"
+            >
+              <FileUp size={16} />
+              上传 .txt 文件
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".txt,text/plain"
+            onChange={handleFileChange}
+            className="hidden"
+          />
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder="在此粘贴或输入单词，多个单词之间用空行分隔..."
+            placeholder="在此粘贴或输入单词，多个单词之间用空行分隔... 也可以点击右上角上传 .txt 文件"
             className="w-full h-72 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-rose-400 focus:outline-none transition-colors font-mono text-sm resize-none"
           />
         </div>
