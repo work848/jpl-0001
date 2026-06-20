@@ -37,6 +37,9 @@ export const verbApi = {
   remove: (id: string) => api.delete<ApiResponse<void>>(`/verb/${id}`),
 
   hide: (id: string) => api.patch<ApiResponse<void>>(`/verb/${id}/hide`),
+
+  toggleHidden: (id: string) =>
+    api.patch<ApiResponse<Verb>>(`/verb/${id}/toggle-hidden`),
 };
 
 export const adjectiveApi = {
@@ -51,6 +54,9 @@ export const adjectiveApi = {
   remove: (id: string) => api.delete<ApiResponse<void>>(`/adjective/${id}`),
 
   hide: (id: string) => api.patch<ApiResponse<void>>(`/adjective/${id}/hide`),
+
+  toggleHidden: (id: string) =>
+    api.patch<ApiResponse<Adjective>>(`/adjective/${id}/toggle-hidden`),
 };
 
 export const settingsApi = {
@@ -77,4 +83,7 @@ export const libraryApi = {
 
   hideNoun: (id: string) =>
     api.patch<ApiResponse<void>>(`/library/noun/${id}/hide`),
+
+  toggleNounHidden: (id: string) =>
+    api.patch<ApiResponse<Noun>>(`/library/noun/${id}/toggle-hidden`),
 };

@@ -5,6 +5,7 @@ import {
   addVerb,
   deleteVerb,
   hideVerb,
+  toggleVerbHidden,
 } from '../services/dataStore.js';
 import { VerbConjugateRequest, VerbConjugateResponse } from '../../shared/types.js';
 
@@ -131,6 +132,36 @@ export async function hide(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: '隐藏动词失败',
+    });
+  }
+}
+
+export async function toggleHidden(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const success = toggleVerbHidden(id);
+    if (!success) {
+      res.status(404).json({
+        success: false,
+        error: '动词不存在',
+      });
+      return;
+    }
+
+    const verbs = getAllVerbs();
+    const verb = verbs.find((v) => v.id === id);
+
+    res.status(200).json({
+      success: true,
+      message: verb?.hidden ? '已标记为不再出现' : '已恢复显示',
+      data: verb,
+    });
+  } catch (error) {
+    console.error('切换动词显示状态错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '切换动词显示状态失败',
     });
   }
 }

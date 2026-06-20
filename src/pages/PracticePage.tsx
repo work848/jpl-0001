@@ -9,13 +9,21 @@ import {
   BookOpen,
   PenTool,
   FileText,
+  X,
+  Eye,
 } from 'lucide-react';
 import { useAppStore } from '../store';
-import { Verb, Adjective, Noun } from '../../shared/types';
+import {
+  Verb,
+  Adjective,
+  Noun,
+  WORD_CATEGORY_LABELS,
+} from '../../shared/types';
 import FlashCard from '../components/FlashCard';
 import ErrorMessage from '../components/ErrorMessage';
 
 type PracticeItem = Verb | Adjective | Noun;
+type ViewCategory = 'verb' | 'adjective' | 'noun' | null;
 
 function getItemCategory(item: PracticeItem): 'verb' | 'adjective' | 'noun' {
   if ('type' in item) {
@@ -42,6 +50,9 @@ export default function PracticePage() {
     hideAdjective,
     hideNoun,
     updateSettings,
+    toggleVerbHidden,
+    toggleAdjectiveHidden,
+    toggleNounHidden,
   } = useAppStore();
 
   const [isPracticing, setIsPracticing] = useState(false);
@@ -53,6 +64,7 @@ export default function PracticePage() {
   const [practiceType, setPracticeType] = useState<
     'all' | 'verb' | 'adjective' | 'noun'
   >('all');
+  const [viewCategory, setViewCategory] = useState<ViewCategory>(null);
 
   useEffect(() => {
     loadAllLibrary();
@@ -169,113 +181,51 @@ export default function PracticePage() {
         <div className="bg-white rounded-2xl shadow-lg p-8">
           <div className="grid grid-cols-4 gap-4 mb-8">
             <button
-              onClick={() =>
-                setPracticeType(practiceType === 'verb' ? 'all' : 'verb')
-              }
-              className={`text-center p-4 rounded-xl cursor-pointer transition-all ${
-                practiceType === 'verb'
-                  ? 'bg-blue-100 ring-2 ring-blue-400'
-                  : 'bg-slate-50 hover:bg-slate-100'
-              }`}
+              onClick={() => setViewCategory('verb')}
+              className="text-center p-4 rounded-xl cursor-pointer transition-all bg-blue-50 hover:bg-blue-100 ring-1 ring-blue-200"
             >
               <div className="flex items-center justify-center gap-2 mb-2">
-                <PenTool
-                  className={
-                    practiceType === 'verb' ? 'text-blue-600' : 'text-slate-600'
-                  }
-                  size={18}
-                />
-                <span
-                  className={`text-sm ${
-                    practiceType === 'verb'
-                      ? 'text-blue-600 font-medium'
-                      : 'text-slate-500'
-                  }`}
-                >
-                  动词
-                </span>
+                <PenTool className="text-blue-600" size={18} />
+                <span className="text-sm text-blue-600 font-medium">动词</span>
               </div>
-              <span
-                className={`text-2xl font-bold ${
-                  practiceType === 'verb' ? 'text-blue-600' : 'text-slate-700'
-                }`}
-              >
-                {visibleVerbs.length}
+              <span className="text-2xl font-bold text-blue-600">
+                {verbs.length}
               </span>
+              <div className="mt-1 text-xs text-blue-500">
+                可见 {visibleVerbs.length} / 隐藏 {verbs.length - visibleVerbs.length}
+              </div>
             </button>
             <button
-              onClick={() =>
-                setPracticeType(practiceType === 'adjective' ? 'all' : 'adjective')
-              }
-              className={`text-center p-4 rounded-xl cursor-pointer transition-all ${
-                practiceType === 'adjective'
-                  ? 'bg-purple-100 ring-2 ring-purple-400'
-                  : 'bg-slate-50 hover:bg-slate-100'
-              }`}
+              onClick={() => setViewCategory('adjective')}
+              className="text-center p-4 rounded-xl cursor-pointer transition-all bg-purple-50 hover:bg-purple-100 ring-1 ring-purple-200"
             >
               <div className="flex items-center justify-center gap-2 mb-2">
-                <BookOpen
-                  className={
-                    practiceType === 'adjective'
-                      ? 'text-purple-600'
-                      : 'text-slate-600'
-                  }
-                  size={18}
-                />
-                <span
-                  className={`text-sm ${
-                    practiceType === 'adjective'
-                      ? 'text-purple-600 font-medium'
-                      : 'text-slate-500'
-                  }`}
-                >
+                <BookOpen className="text-purple-600" size={18} />
+                <span className="text-sm text-purple-600 font-medium">
                   形容词
                 </span>
               </div>
-              <span
-                className={`text-2xl font-bold ${
-                  practiceType === 'adjective'
-                    ? 'text-purple-600'
-                    : 'text-slate-700'
-                }`}
-              >
-                {visibleAdjectives.length}
+              <span className="text-2xl font-bold text-purple-600">
+                {adjectives.length}
               </span>
+              <div className="mt-1 text-xs text-purple-500">
+                可见 {visibleAdjectives.length} / 隐藏 {adjectives.length - visibleAdjectives.length}
+              </div>
             </button>
             <button
-              onClick={() =>
-                setPracticeType(practiceType === 'noun' ? 'all' : 'noun')
-              }
-              className={`text-center p-4 rounded-xl cursor-pointer transition-all ${
-                practiceType === 'noun'
-                  ? 'bg-teal-100 ring-2 ring-teal-400'
-                  : 'bg-slate-50 hover:bg-slate-100'
-              }`}
+              onClick={() => setViewCategory('noun')}
+              className="text-center p-4 rounded-xl cursor-pointer transition-all bg-teal-50 hover:bg-teal-100 ring-1 ring-teal-200"
             >
               <div className="flex items-center justify-center gap-2 mb-2">
-                <FileText
-                  className={
-                    practiceType === 'noun' ? 'text-teal-600' : 'text-slate-600'
-                  }
-                  size={18}
-                />
-                <span
-                  className={`text-sm ${
-                    practiceType === 'noun'
-                      ? 'text-teal-600 font-medium'
-                      : 'text-slate-500'
-                  }`}
-                >
-                  名词
-                </span>
+                <FileText className="text-teal-600" size={18} />
+                <span className="text-sm text-teal-600 font-medium">名词</span>
               </div>
-              <span
-                className={`text-2xl font-bold ${
-                  practiceType === 'noun' ? 'text-teal-600' : 'text-slate-700'
-                }`}
-              >
-                {visibleNouns.length}
+              <span className="text-2xl font-bold text-teal-600">
+                {nouns.length}
               </span>
+              <div className="mt-1 text-xs text-teal-500">
+                可见 {visibleNouns.length} / 隐藏 {nouns.length - visibleNouns.length}
+              </div>
             </button>
             <div className="text-center p-4 bg-rose-50 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
@@ -301,7 +251,7 @@ export default function PracticePage() {
               ].map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => setPracticeType(opt.value as any)}
+                  onClick={() => setPracticeType(opt.value as 'all' | 'verb' | 'adjective' | 'noun')}
                   className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all ${
                     practiceType === opt.value
                       ? 'bg-slate-700 text-white'
@@ -370,6 +320,284 @@ export default function PracticePage() {
                   className="flex-1 py-3 px-6 rounded-xl font-medium bg-slate-700 text-white hover:bg-slate-800 transition-all"
                 >
                   保存
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {viewCategory && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[85vh] flex flex-col animate-fadeIn">
+              <div className="flex items-center justify-between p-6 border-b border-slate-200">
+                <h3 className="text-xl font-bold text-slate-800">
+                  {WORD_CATEGORY_LABELS[viewCategory]}词库
+                  <span className="ml-3 text-base font-normal text-slate-500">
+                    共{' '}
+                    {viewCategory === 'verb'
+                      ? verbs.length
+                      : viewCategory === 'adjective'
+                      ? adjectives.length
+                      : nouns.length}{' '}
+                    个单词
+                  </span>
+                </h3>
+                <button
+                  onClick={() => setViewCategory(null)}
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-auto p-6">
+                {viewCategory === 'verb' && verbs.length > 0 && (
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-white">
+                      <tr className="border-b-2 border-slate-200">
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          单词
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          读音
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          释义
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          类型
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          状态
+                        </th>
+                        <th className="text-right py-3 px-4 font-medium text-slate-600 text-sm">
+                          操作
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {verbs.map((verb) => (
+                        <tr
+                          key={verb.id}
+                          className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${
+                            verb.hidden ? 'opacity-50' : ''
+                          }`}
+                        >
+                          <td className="py-4 px-4 text-lg font-semibold text-slate-800">
+                            {verb.word}
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">
+                            {verb.pronunciation || '-'}
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">
+                            {verb.meaning || '-'}
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="inline-block px-3 py-1 bg-blue-50 text-blue-600 rounded-full text-sm">
+                              {verb.typeLabel}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            {verb.hidden ? (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-sm">
+                                <EyeOff size={14} />
+                                已隐藏
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm">
+                                <Eye size={14} />
+                                显示中
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <button
+                              onClick={() => toggleVerbHidden(verb.id)}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                verb.hidden
+                                  ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                  : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                              }`}
+                            >
+                              {verb.hidden ? '恢复显示' : '隐藏'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {viewCategory === 'adjective' && adjectives.length > 0 && (
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-white">
+                      <tr className="border-b-2 border-slate-200">
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          单词
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          读音
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          释义
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          类型
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          状态
+                        </th>
+                        <th className="text-right py-3 px-4 font-medium text-slate-600 text-sm">
+                          操作
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {adjectives.map((adj) => (
+                        <tr
+                          key={adj.id}
+                          className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${
+                            adj.hidden ? 'opacity-50' : ''
+                          }`}
+                        >
+                          <td className="py-4 px-4 text-lg font-semibold text-slate-800">
+                            {adj.word}
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">
+                            {adj.pronunciation || '-'}
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">
+                            {adj.meaning || '-'}
+                          </td>
+                          <td className="py-4 px-4">
+                            <span className="inline-block px-3 py-1 bg-purple-50 text-purple-600 rounded-full text-sm">
+                              {adj.typeLabel}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4">
+                            {adj.hidden ? (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-sm">
+                                <EyeOff size={14} />
+                                已隐藏
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm">
+                                <Eye size={14} />
+                                显示中
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <button
+                              onClick={() => toggleAdjectiveHidden(adj.id)}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                adj.hidden
+                                  ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                  : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                              }`}
+                            >
+                              {adj.hidden ? '恢复显示' : '隐藏'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {viewCategory === 'noun' && nouns.length > 0 && (
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-white">
+                      <tr className="border-b-2 border-slate-200">
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          单词
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          读音
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          释义
+                        </th>
+                        <th className="text-left py-3 px-4 font-medium text-slate-600 text-sm">
+                          状态
+                        </th>
+                        <th className="text-right py-3 px-4 font-medium text-slate-600 text-sm">
+                          操作
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {nouns.map((noun) => (
+                        <tr
+                          key={noun.id}
+                          className={`border-b border-slate-100 hover:bg-slate-50 transition-colors ${
+                            noun.hidden ? 'opacity-50' : ''
+                          }`}
+                        >
+                          <td className="py-4 px-4 text-lg font-semibold text-slate-800">
+                            {noun.word}
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">
+                            {noun.pronunciation || '-'}
+                          </td>
+                          <td className="py-4 px-4 text-slate-600">
+                            {noun.meaning || '-'}
+                          </td>
+                          <td className="py-4 px-4">
+                            {noun.hidden ? (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-sm">
+                                <EyeOff size={14} />
+                                已隐藏
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-50 text-green-600 rounded-full text-sm">
+                                <Eye size={14} />
+                                显示中
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-4 text-right">
+                            <button
+                              onClick={() => toggleNounHidden(noun.id)}
+                              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                noun.hidden
+                                  ? 'bg-green-50 text-green-600 hover:bg-green-100'
+                                  : 'bg-orange-50 text-orange-600 hover:bg-orange-100'
+                              }`}
+                            >
+                              {noun.hidden ? '恢复显示' : '隐藏'}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+
+                {((viewCategory === 'verb' && verbs.length === 0) ||
+                  (viewCategory === 'adjective' && adjectives.length === 0) ||
+                  (viewCategory === 'noun' && nouns.length === 0)) && (
+                  <div className="text-center py-16">
+                    <FileText
+                      size={48}
+                      className="mx-auto mb-4 text-slate-300"
+                    />
+                    <p className="text-slate-500 text-lg">
+                      暂无{WORD_CATEGORY_LABELS[viewCategory]}
+                    </p>
+                    <p className="text-slate-400 text-sm mt-2">
+                      请先添加单词到词库
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6 border-t border-slate-200 flex justify-end">
+                <button
+                  onClick={() => setViewCategory(null)}
+                  className="px-6 py-3 rounded-xl font-medium bg-slate-700 text-white hover:bg-slate-800 transition-all"
+                >
+                  关闭
                 </button>
               </div>
             </div>

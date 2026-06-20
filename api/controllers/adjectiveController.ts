@@ -5,6 +5,7 @@ import {
   addAdjective,
   deleteAdjective,
   hideAdjective,
+  toggleAdjectiveHidden,
 } from '../services/dataStore.js';
 import {
   AdjectiveConjugateRequest,
@@ -137,6 +138,36 @@ export async function hide(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: '隐藏形容词失败',
+    });
+  }
+}
+
+export async function toggleHidden(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const success = toggleAdjectiveHidden(id);
+    if (!success) {
+      res.status(404).json({
+        success: false,
+        error: '形容词不存在',
+      });
+      return;
+    }
+
+    const adjectives = getAllAdjectives();
+    const adjective = adjectives.find((a) => a.id === id);
+
+    res.status(200).json({
+      success: true,
+      message: adjective?.hidden ? '已标记为不再出现' : '已恢复显示',
+      data: adjective,
+    });
+  } catch (error) {
+    console.error('切换形容词显示状态错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '切换形容词显示状态失败',
     });
   }
 }

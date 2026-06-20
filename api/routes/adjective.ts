@@ -8,5 +8,6 @@ router.get('/', adjectiveController.list);
 router.post('/', adjectiveController.create);
 router.delete('/:id', adjectiveController.remove);
 router.patch('/:id/hide', adjectiveController.hide);
+router.patch('/:id/toggle-hidden', adjectiveController.toggleHidden);
 
 export default router;

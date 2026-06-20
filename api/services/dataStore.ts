@@ -130,6 +130,26 @@ export function hideVerb(id: string): boolean {
   return true;
 }
 
+export function unhideVerb(id: string): boolean {
+  const verbs = getAllVerbs();
+  const verb = verbs.find((v) => v.id === id);
+  if (!verb) return false;
+  
+  verb.hidden = false;
+  writeJsonFile(VERBS_FILE, verbs);
+  return true;
+}
+
+export function toggleVerbHidden(id: string): boolean {
+  const verbs = getAllVerbs();
+  const verb = verbs.find((v) => v.id === id);
+  if (!verb) return false;
+  
+  verb.hidden = !verb.hidden;
+  writeJsonFile(VERBS_FILE, verbs);
+  return true;
+}
+
 export function getAllAdjectives(): Adjective[] {
   return readJsonFile<Adjective[]>(ADJECTIVES_FILE);
 }
@@ -264,6 +284,26 @@ export function hideNoun(id: string): boolean {
   return true;
 }
 
+export function unhideNoun(id: string): boolean {
+  const nouns = getAllNouns();
+  const noun = nouns.find((n) => n.id === id);
+  if (!noun) return false;
+
+  noun.hidden = false;
+  writeJsonFile(NOUNS_FILE, nouns);
+  return true;
+}
+
+export function toggleNounHidden(id: string): boolean {
+  const nouns = getAllNouns();
+  const noun = nouns.find((n) => n.id === id);
+  if (!noun) return false;
+
+  noun.hidden = !noun.hidden;
+  writeJsonFile(NOUNS_FILE, nouns);
+  return true;
+}
+
 export function deleteAdjective(id: string): boolean {
   const adjectives = getAllAdjectives();
   const index = adjectives.findIndex((a) => a.id === id);
@@ -280,6 +320,26 @@ export function hideAdjective(id: string): boolean {
   if (!adjective) return false;
   
   adjective.hidden = true;
+  writeJsonFile(ADJECTIVES_FILE, adjectives);
+  return true;
+}
+
+export function unhideAdjective(id: string): boolean {
+  const adjectives = getAllAdjectives();
+  const adjective = adjectives.find((a) => a.id === id);
+  if (!adjective) return false;
+  
+  adjective.hidden = false;
+  writeJsonFile(ADJECTIVES_FILE, adjectives);
+  return true;
+}
+
+export function toggleAdjectiveHidden(id: string): boolean {
+  const adjectives = getAllAdjectives();
+  const adjective = adjectives.find((a) => a.id === id);
+  if (!adjective) return false;
+  
+  adjective.hidden = !adjective.hidden;
   writeJsonFile(ADJECTIVES_FILE, adjectives);
   return true;
 }

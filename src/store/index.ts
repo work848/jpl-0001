@@ -37,6 +37,9 @@ interface AppState {
   hideVerb: (id: string) => Promise<void>;
   hideAdjective: (id: string) => Promise<void>;
   hideNoun: (id: string) => Promise<void>;
+  toggleVerbHidden: (id: string) => Promise<void>;
+  toggleAdjectiveHidden: (id: string) => Promise<void>;
+  toggleNounHidden: (id: string) => Promise<void>;
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
   setCurrentVerbWord: (word: string) => void;
   setCurrentVerbType: (type: string) => void;
@@ -234,6 +237,51 @@ export const useAppStore = create<AppState>((set, get) => ({
           n.id === id ? { ...n, hidden: true } : n
         ),
       }));
+    } catch (err) {
+      set({ error: '操作失败' });
+    }
+  },
+
+  toggleVerbHidden: async (id: string) => {
+    try {
+      const res = await verbApi.toggleHidden(id);
+      if (res.data.success && res.data.data) {
+        set((state) => ({
+          verbs: state.verbs.map((v) =>
+            v.id === id ? res.data.data! : v
+          ),
+        }));
+      }
+    } catch (err) {
+      set({ error: '操作失败' });
+    }
+  },
+
+  toggleAdjectiveHidden: async (id: string) => {
+    try {
+      const res = await adjectiveApi.toggleHidden(id);
+      if (res.data.success && res.data.data) {
+        set((state) => ({
+          adjectives: state.adjectives.map((a) =>
+            a.id === id ? res.data.data! : a
+          ),
+        }));
+      }
+    } catch (err) {
+      set({ error: '操作失败' });
+    }
+  },
+
+  toggleNounHidden: async (id: string) => {
+    try {
+      const res = await libraryApi.toggleNounHidden(id);
+      if (res.data.success && res.data.data) {
+        set((state) => ({
+          nouns: state.nouns.map((n) =>
+            n.id === id ? res.data.data! : n
+          ),
+        }));
+      }
     } catch (err) {
       set({ error: '操作失败' });
     }

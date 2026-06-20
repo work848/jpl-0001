@@ -5,6 +5,7 @@ import {
   getAllAdjectives,
   getAllNouns,
   hideNoun,
+  toggleNounHidden,
 } from '../services/dataStore.js';
 import { BatchImportResult, LibraryItem } from '../../shared/types.js';
 
@@ -99,6 +100,36 @@ export async function hideNounById(req: Request, res: Response) {
     res.status(500).json({
       success: false,
       error: '隐藏名词失败',
+    });
+  }
+}
+
+export async function toggleNounHiddenById(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const success = toggleNounHidden(id);
+    if (!success) {
+      res.status(404).json({
+        success: false,
+        error: '名词不存在',
+      });
+      return;
+    }
+
+    const nouns = getAllNouns();
+    const noun = nouns.find((n) => n.id === id);
+
+    res.status(200).json({
+      success: true,
+      message: noun?.hidden ? '已标记为不再出现' : '已恢复显示',
+      data: noun,
+    });
+  } catch (error) {
+    console.error('切换名词显示状态错误:', error);
+    res.status(500).json({
+      success: false,
+      error: '切换名词显示状态失败',
     });
   }
 }
