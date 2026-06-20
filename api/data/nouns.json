@@ -1,0 +1,18 @@
+[
+  {
+    "id": "4a151d12-bb58-4fc2-942e-e46253e6ce22",
+    "word": "猫",
+    "pronunciation": "ねこ",
+    "meaning": "猫",
+    "hidden": false,
+    "createdAt": 1781961431109
+  },
+  {
+    "id": "24eb649a-bee2-4d32-856d-f257560c920b",
+    "word": "私",
+    "pronunciation": "わたし",
+    "meaning": "我",
+    "hidden": false,
+    "createdAt": 1781961431137
+  }
+]

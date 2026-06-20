@@ -8,25 +8,39 @@ import {
   RotateCcw,
   BookOpen,
   PenTool,
+  FileText,
 } from 'lucide-react';
 import { useAppStore } from '../store';
-import { Verb, Adjective } from '../../shared/types';
+import { Verb, Adjective, Noun } from '../../shared/types';
 import FlashCard from '../components/FlashCard';
 import ErrorMessage from '../components/ErrorMessage';
 
-type PracticeItem = Verb | Adjective;
+type PracticeItem = Verb | Adjective | Noun;
+
+function getItemCategory(item: PracticeItem): 'verb' | 'adjective' | 'noun' {
+  if ('type' in item) {
+    if (['godan', 'ichidan', 'irregular'].includes(item.type)) {
+      return 'verb';
+    }
+    if (['i', 'na'].includes(item.type)) {
+      return 'adjective';
+    }
+  }
+  return 'noun';
+}
 
 export default function PracticePage() {
   const {
     verbs,
     adjectives,
+    nouns,
     settings,
     error,
-    loadVerbs,
-    loadAdjectives,
+    loadAllLibrary,
     loadSettings,
     hideVerb,
     hideAdjective,
+    hideNoun,
     updateSettings,
   } = useAppStore();
 
@@ -36,13 +50,14 @@ export default function PracticePage() {
   const [practiceItems, setPracticeItems] = useState<PracticeItem[]>([]);
   const [showSettings, setShowSettings] = useState(false);
   const [tempReviewCount, setTempReviewCount] = useState(10);
-  const [practiceType, setPracticeType] = useState<'all' | 'verb' | 'adjective'>('all');
+  const [practiceType, setPracticeType] = useState<
+    'all' | 'verb' | 'adjective' | 'noun'
+  >('all');
 
   useEffect(() => {
-    loadVerbs();
-    loadAdjectives();
+    loadAllLibrary();
     loadSettings();
-  }, [loadVerbs, loadAdjectives, loadSettings]);
+  }, [loadAllLibrary, loadSettings]);
 
   useEffect(() => {
     if (settings?.reviewCount) {
@@ -52,12 +67,15 @@ export default function PracticePage() {
 
   const visibleVerbs = verbs.filter((v) => !v.hidden);
   const visibleAdjectives = adjectives.filter((a) => !a.hidden);
+  const visibleNouns = nouns.filter((n) => !n.hidden);
   const totalAvailable =
     practiceType === 'all'
-      ? visibleVerbs.length + visibleAdjectives.length
+      ? visibleVerbs.length + visibleAdjectives.length + visibleNouns.length
       : practiceType === 'verb'
       ? visibleVerbs.length
-      : visibleAdjectives.length;
+      : practiceType === 'adjective'
+      ? visibleAdjectives.length
+      : visibleNouns.length;
 
   const getRandomItems = (): PracticeItem[] => {
     let items: PracticeItem[] = [];
@@ -67,6 +85,9 @@ export default function PracticePage() {
     }
     if (practiceType === 'all' || practiceType === 'adjective') {
       items = [...items, ...visibleAdjectives];
+    }
+    if (practiceType === 'all' || practiceType === 'noun') {
+      items = [...items, ...visibleNouns];
     }
 
     const shuffled = items.sort(() => Math.random() - 0.5);
@@ -102,12 +123,14 @@ export default function PracticePage() {
     const currentItem = practiceItems[currentIndex];
     if (!currentItem) return;
 
-    const isVerb = 'type' in currentItem && ['godan', 'ichidan', 'irregular'].includes(currentItem.type);
+    const category = getItemCategory(currentItem);
 
-    if (isVerb) {
+    if (category === 'verb') {
       await hideVerb(currentItem.id);
-    } else {
+    } else if (category === 'adjective') {
       await hideAdjective(currentItem.id);
+    } else {
+      await hideNoun(currentItem.id);
     }
 
     const updatedItems = practiceItems.filter((_, i) => i !== currentIndex);
@@ -128,10 +151,10 @@ export default function PracticePage() {
 
   if (!isPracticing) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-8 animate-fadeIn">
+      <div className="max-w-3xl mx-auto px-4 py-8 animate-fadeIn">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-slate-800 mb-2">词库练习</h2>
-          <p className="text-slate-500">通过卡片复习你收集的动词和形容词</p>
+          <p className="text-slate-500">通过卡片复习你收集的动词、形容词和名词</p>
         </div>
 
         {error && (
@@ -144,31 +167,40 @@ export default function PracticePage() {
         )}
 
         <div className="bg-white rounded-2xl shadow-lg p-8">
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-4 gap-4 mb-8">
             <div className="text-center p-4 bg-slate-50 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <PenTool className="text-slate-600" size={20} />
+                <PenTool className="text-slate-600" size={18} />
                 <span className="text-sm text-slate-500">动词</span>
               </div>
-              <span className="text-3xl font-bold text-slate-700">
+              <span className="text-2xl font-bold text-slate-700">
                 {visibleVerbs.length}
               </span>
             </div>
             <div className="text-center p-4 bg-slate-50 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <BookOpen className="text-slate-600" size={20} />
+                <BookOpen className="text-slate-600" size={18} />
                 <span className="text-sm text-slate-500">形容词</span>
               </div>
-              <span className="text-3xl font-bold text-slate-700">
+              <span className="text-2xl font-bold text-slate-700">
                 {visibleAdjectives.length}
+              </span>
+            </div>
+            <div className="text-center p-4 bg-slate-50 rounded-xl">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <FileText className="text-slate-600" size={18} />
+                <span className="text-sm text-slate-500">名词</span>
+              </div>
+              <span className="text-2xl font-bold text-slate-700">
+                {visibleNouns.length}
               </span>
             </div>
             <div className="text-center p-4 bg-rose-50 rounded-xl">
               <div className="flex items-center justify-center gap-2 mb-2">
-                <Settings className="text-rose-500" size={20} />
+                <Settings className="text-rose-500" size={18} />
                 <span className="text-sm text-rose-500">每次复习</span>
               </div>
-              <span className="text-3xl font-bold text-rose-500">
+              <span className="text-2xl font-bold text-rose-500">
                 {settings?.reviewCount || 10}
               </span>
             </div>
@@ -183,6 +215,7 @@ export default function PracticePage() {
                 { value: 'all', label: '全部' },
                 { value: 'verb', label: '仅动词' },
                 { value: 'adjective', label: '仅形容词' },
+                { value: 'noun', label: '仅名词' },
               ].map((opt) => (
                 <button
                   key={opt.value}

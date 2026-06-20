@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom';
-import { BookOpen, PenTool, Layers } from 'lucide-react';
+import { BookOpen, PenTool, Layers, Upload } from 'lucide-react';
 
 export default function Navbar() {
   const navItems = [
     { to: '/', label: '动词变形', icon: PenTool },
     { to: '/adjective', label: '形容词变形', icon: BookOpen },
     { to: '/practice', label: '词库练习', icon: Layers },
+    { to: '/import', label: '批量导入', icon: Upload },
   ];
 
   return (

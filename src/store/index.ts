@@ -2,18 +2,22 @@ import { create } from 'zustand';
 import {
   Verb,
   Adjective,
+  Noun,
   Settings,
   VerbFormType,
   ConjugationResult,
+  BatchImportResult,
 } from '../../shared/types';
-import { verbApi, adjectiveApi, settingsApi } from '../services/api';
+import { verbApi, adjectiveApi, settingsApi, libraryApi } from '../services/api';
 
 interface AppState {
   verbs: Verb[];
   adjectives: Adjective[];
+  nouns: Noun[];
   settings: Settings | null;
   verbResults: ConjugationResult[];
   adjectiveResults: ConjugationResult[];
+  lastImportResult: BatchImportResult | null;
   loading: boolean;
   error: string | null;
   currentVerbWord: string;
@@ -22,13 +26,17 @@ interface AppState {
   currentAdjType: string;
   loadVerbs: () => Promise<void>;
   loadAdjectives: () => Promise<void>;
+  loadNouns: () => Promise<void>;
+  loadAllLibrary: () => Promise<void>;
   loadSettings: () => Promise<void>;
   conjugateVerb: (word: string, type: string, forms: VerbFormType[]) => Promise<void>;
   conjugateAdjective: (word: string, type: string) => Promise<void>;
   addVerbToLibrary: (word: string, type: string) => Promise<Verb | undefined>;
   addAdjectiveToLibrary: (word: string, type: string) => Promise<Adjective | undefined>;
+  batchImport: (text: string) => Promise<BatchImportResult | undefined>;
   hideVerb: (id: string) => Promise<void>;
   hideAdjective: (id: string) => Promise<void>;
+  hideNoun: (id: string) => Promise<void>;
   updateSettings: (settings: Partial<Settings>) => Promise<void>;
   setCurrentVerbWord: (word: string) => void;
   setCurrentVerbType: (type: string) => void;
@@ -36,14 +44,17 @@ interface AppState {
   setCurrentAdjType: (type: string) => void;
   clearVerbResults: () => void;
   clearAdjectiveResults: () => void;
+  clearImportResult: () => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
   verbs: [],
   adjectives: [],
+  nouns: [],
   settings: null,
   verbResults: [],
   adjectiveResults: [],
+  lastImportResult: null,
   loading: false,
   error: null,
   currentVerbWord: '',
@@ -81,6 +92,32 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
     } catch (err) {
       set({ error: '加载设置失败' });
+    }
+  },
+
+  loadNouns: async () => {
+    try {
+      const res = await libraryApi.listNouns();
+      if (res.data.success && res.data.data) {
+        set({ nouns: res.data.data });
+      }
+    } catch (err) {
+      set({ error: '加载名词列表失败' });
+    }
+  },
+
+  loadAllLibrary: async () => {
+    try {
+      const res = await libraryApi.listAll();
+      if (res.data.success && res.data.data) {
+        set({
+          verbs: res.data.data.verbs,
+          adjectives: res.data.data.adjectives,
+          nouns: res.data.data.nouns,
+        });
+      }
+    } catch (err) {
+      set({ error: '加载词库失败' });
     }
   },
 
@@ -144,6 +181,25 @@ export const useAppStore = create<AppState>((set, get) => ({
     return undefined;
   },
 
+  batchImport: async (text: string) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await libraryApi.batchImport(text);
+      if (res.data.success && res.data.data) {
+        set({ lastImportResult: res.data.data });
+        await get().loadAllLibrary();
+        return res.data.data;
+      } else {
+        set({ error: res.data.error || '导入失败' });
+      }
+    } catch (err: any) {
+      set({ error: err.response?.data?.error || '导入失败' });
+    } finally {
+      set({ loading: false });
+    }
+    return undefined;
+  },
+
   hideVerb: async (id: string) => {
     try {
       await verbApi.hide(id);
@@ -170,6 +226,19 @@ export const useAppStore = create<AppState>((set, get) => ({
     }
   },
 
+  hideNoun: async (id: string) => {
+    try {
+      await libraryApi.hideNoun(id);
+      set((state) => ({
+        nouns: state.nouns.map((n) =>
+          n.id === id ? { ...n, hidden: true } : n
+        ),
+      }));
+    } catch (err) {
+      set({ error: '操作失败' });
+    }
+  },
+
   updateSettings: async (settings: Partial<Settings>) => {
     try {
       const res = await settingsApi.update(settings);
@@ -187,4 +256,5 @@ export const useAppStore = create<AppState>((set, get) => ({
   setCurrentAdjType: (type: string) => set({ currentAdjType: type }),
   clearVerbResults: () => set({ verbResults: [] }),
   clearAdjectiveResults: () => set({ adjectiveResults: [] }),
+  clearImportResult: () => set({ lastImportResult: null }),
 }));

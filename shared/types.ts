@@ -2,6 +2,8 @@ export type VerbType = 'godan' | 'ichidan' | 'irregular';
 
 export type AdjectiveType = 'i' | 'na';
 
+export type WordCategory = 'verb' | 'adjective' | 'noun';
+
 export type VerbFormType =
   | 'past'
   | 'negative'
@@ -22,6 +24,8 @@ export interface Verb {
   word: string;
   type: VerbType;
   typeLabel: string;
+  pronunciation?: string;
+  meaning?: string;
   hidden: boolean;
   createdAt: number;
 }
@@ -31,8 +35,38 @@ export interface Adjective {
   word: string;
   type: AdjectiveType;
   typeLabel: string;
+  pronunciation?: string;
+  meaning?: string;
   hidden: boolean;
   createdAt: number;
+}
+
+export interface Noun {
+  id: string;
+  word: string;
+  pronunciation?: string;
+  meaning?: string;
+  hidden: boolean;
+  createdAt: number;
+}
+
+export type LibraryItem = Verb | Adjective | Noun;
+
+export interface ParsedWordEntry {
+  category: WordCategory;
+  word: string;
+  pronunciation: string;
+  meaning: string;
+  type?: VerbType | AdjectiveType;
+  rawType?: string;
+}
+
+export interface BatchImportResult {
+  total: number;
+  imported: number;
+  skipped: number;
+  errors: string[];
+  items: LibraryItem[];
 }
 
 export interface Settings {
@@ -98,4 +132,31 @@ export const VERB_TYPE_LABELS: Record<VerbType, string> = {
 export const ADJECTIVE_TYPE_LABELS: Record<AdjectiveType, string> = {
   i: '1类形容词',
   na: '2类形容词',
+};
+
+export const WORD_CATEGORY_LABELS: Record<WordCategory, string> = {
+  verb: '动词',
+  adjective: '形容词',
+  noun: '名词',
+};
+
+export const TYPE_LABEL_TO_VERB_TYPE: Record<string, VerbType> = {
+  '一类动词': 'godan',
+  '五段动词': 'godan',
+  '二类动词': 'ichidan',
+  '一段动词': 'ichidan',
+  '三类动词': 'irregular',
+  '不规则动词': 'irregular',
+  'サ变カ变动词': 'irregular',
+};
+
+export const TYPE_LABEL_TO_ADJECTIVE_TYPE: Record<string, AdjectiveType> = {
+  '1类形容词': 'i',
+  '一类形容词': 'i',
+  'い形容词': 'i',
+  'イ形容词': 'i',
+  '2类形容词': 'na',
+  '二类形容词': 'na',
+  'な形容词': 'na',
+  'ナ形容词': 'na',
 };

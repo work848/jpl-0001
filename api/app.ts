@@ -14,6 +14,7 @@ import { fileURLToPath } from 'url'
 import verbRoutes from './routes/verb.js'
 import adjectiveRoutes from './routes/adjective.js'
 import settingsRoutes from './routes/settings.js'
+import libraryRoutes from './routes/library.js'
 
 // for esm mode
 const __filename = fileURLToPath(import.meta.url)
@@ -34,6 +35,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 app.use('/api/verb', verbRoutes)
 app.use('/api/adjective', adjectiveRoutes)
 app.use('/api/settings', settingsRoutes)
+app.use('/api/library', libraryRoutes)
 
 /**
  * health

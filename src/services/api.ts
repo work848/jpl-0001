@@ -2,11 +2,13 @@ import axios from 'axios';
 import {
   Verb,
   Adjective,
+  Noun,
   Settings,
   VerbConjugateRequest,
   VerbConjugateResponse,
   AdjectiveConjugateRequest,
   AdjectiveConjugateResponse,
+  BatchImportResult,
 } from '../../shared/types';
 
 const api = axios.create({
@@ -56,4 +58,23 @@ export const settingsApi = {
 
   update: (data: Partial<Settings>) =>
     api.put<ApiResponse<Settings>>('/settings', data),
+};
+
+interface LibraryListResponse {
+  verbs: Verb[];
+  adjectives: Adjective[];
+  nouns: Noun[];
+  all: (Verb | Adjective | Noun)[];
+}
+
+export const libraryApi = {
+  batchImport: (text: string) =>
+    api.post<ApiResponse<BatchImportResult>>('/library/import', { text }),
+
+  listAll: () => api.get<ApiResponse<LibraryListResponse>>('/library'),
+
+  listNouns: () => api.get<ApiResponse<Noun[]>>('/library/nouns'),
+
+  hideNoun: (id: string) =>
+    api.patch<ApiResponse<void>>(`/library/noun/${id}/hide`),
 };

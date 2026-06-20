@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import VerbPage from './pages/VerbPage';
 import AdjectivePage from './pages/AdjectivePage';
 import PracticePage from './pages/PracticePage';
+import ImportPage from './pages/ImportPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
             <Route path="/" element={<VerbPage />} />
             <Route path="/adjective" element={<AdjectivePage />} />
             <Route path="/practice" element={<PracticePage />} />
+            <Route path="/import" element={<ImportPage />} />
           </Routes>
         </main>
       </div>

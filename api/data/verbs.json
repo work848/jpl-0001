@@ -5,6 +5,8 @@
     "type": "ichidan",
     "typeLabel": "二类动词",
     "hidden": false,
-    "createdAt": 1781957919393
+    "createdAt": 1781957919393,
+    "pronunciation": "たべる",
+    "meaning": "吃"
   }
 ]
